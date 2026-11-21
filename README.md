@@ -2,6 +2,8 @@
 
 **Your Imagination. No Limits.**
 
+[![CI](https://github.com/Narco995/KaraokeForge-Installer/actions/workflows/ci.yml/badge.svg)](https://github.com/Narco995/KaraokeForge-Installer/actions/workflows/ci.yml)
+
 An independent, production-grade AI creative platform: image, video, character, editing and product studios in one cinematic workspace. Built with Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS v4, Prisma + SQLite, and a provider-adapter architecture that connects to real AI inference APIs (Replicate, fal.ai).
 
 ---
@@ -62,6 +64,19 @@ STRIPE_WEBHOOK_SECRET=    # enables webhook fulfillment
 ```
 
 With no provider keys, studios and the model hub show exactly which env var unlocks each model; the generate API returns 409 (no credits touched); Stripe checkout returns 503.
+
+## Deploy with Docker
+
+```bash
+docker build -t freefielder-ai .
+docker run -d -p 3000:3000 \
+  -e AUTH_SECRET="$(openssl rand -base64 48)" \
+  -e REPLICATE_API_TOKEN="..." \
+  -v freefielder-data:/app/.data \
+  freefielder-ai
+```
+
+The image auto-applies the database schema on start and exposes `GET /api/health` (DB check + provider booleans) for uptime monitoring and load-balancer probes. SQLite lives in `/app/.data`; mount a volume to persist users, projects and assets. For multi-instance deployments see the Postgres/roadmap notes below.
 
 ## Environment
 
