@@ -1,0 +1,32 @@
+# FREEFIELDER AI - Render deployment (declarative blueprint; create the service from your Render account)
+#
+#   Render dashboard -> New -> Blueprint -> point it at this repository.
+#   The disks below persist the SQLite database and generated assets across deploys.
+services:
+  - type: web
+    name: freefielder-ai
+    runtime: docker
+    plan: starter
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        value: file:/app/.data/prod.db
+      - key: AUTH_SECRET
+        generateValue: true
+      - key: REPLICATE_API_TOKEN
+        sync: false
+      - key: FAL_KEY
+        sync: false
+      - key: ELEVENLABS_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+    disk:
+      name: ff-data
+      mountPath: /app/.data
+      sizeGB: 5

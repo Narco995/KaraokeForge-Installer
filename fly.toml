@@ -1,0 +1,41 @@
+# FREEFIELDER AI - Fly.io deployment (declarative config; deploy with your own Fly.io account)
+#
+#   fly launch --no-deploy        (reuses this file)
+#   fly volumes create ff_data --size 3 --region iad   # persistent volume for .data
+#   fly secrets set AUTH_SECRET=... DATABASE_URL=file:/app/.data/prod.db
+#   fly secrets set REPLICATE_API_TOKEN=... FAL_KEY=... ELEVENLABS_API_KEY=...
+#   fly deploy
+#
+# The Dockerfile mounts nothing itself; attach the volume at /app/.data via
+#   fly machines update <id> --mounts ff_data:/app/.data
+#   (or in fly.toml [mounts] after the volume exists on the app.
+
+app = "freefielder-ai"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "3000"
+  DATABASE_URL = "file:/app/.data/prod.db"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "suspend"
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 60
+    hard_limit = 100
+
+[mounts]
+  source = "ff_data"
+  destination = "/app/.data"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1gb"

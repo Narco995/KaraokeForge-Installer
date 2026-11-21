@@ -25,6 +25,8 @@ const paramsSchema = z.object({
   lens: z.string().max(40).optional(),
   lighting: z.string().max(40).optional(),
   style: z.string().max(40).optional(),
+  voiceId: z.string().max(100).optional(),
+  voiceStability: z.number().min(0).max(1).optional(),
 });
 
 export const generateSchema = z.object({

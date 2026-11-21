@@ -78,6 +78,19 @@ docker run -d -p 3000:3000 \
 
 The image auto-applies the database schema on start and exposes `GET /api/health` (DB check + provider booleans) for uptime monitoring and load-balancer probes. SQLite lives in `/app/.data`; mount a volume to persist users, projects and assets. For multi-instance deployments see the Postgres/roadmap notes below.
 
+Declarative deploy configs for **Fly.io** (`fly.toml`) and **Render** (`render.yaml`) are included; both mount the persistent volume at `/app/.data`.
+
+## Operations
+
+```bash
+npm run provider:check   # authenticate every provider against its official API (no secret values printed)
+npm run db:backup [dir]  # SQLite hot backup (VACUUM INTO), keeps the 20 newest in .data/backups
+```
+
+On boot (`src/instrumentation.ts`) the server fails and refunds any RUNNING job older than 15 minutes and re-dispatches QUEUED jobs left by a crash. Set `APP_ORIGIN` when running behind a real domain so background-dispatched jobs can absolutize reference-asset URLs.
+
+Provider research, credential sources and the outstanding-requirements table live in [RESEARCH/providers.md](RESEARCH/providers.md).
+
 ## Environment
 
 ## Phase status
@@ -90,7 +103,8 @@ The image auto-applies the database schema on start and exposes `GET /api/health
 - **Phase 6** Editing Studio — done (realtime WebM export)
 - **Phase 7** Credits, subscriptions, Stripe — done
 - **Phase 8** Admin dashboard + monitoring — done
-- **Phase 9** Tests (26 passing), build green, security review — done
+- **Phase 9** Tests (31 passing), build green, security review — done
+- **Autonomy pass** ElevenLabs audio provider, automatic model fallback (creation-time + run-time failover), boot job recovery, ops scripts, deploy configs, provider research — done
 
 ## Honest limitations / production roadmap
 

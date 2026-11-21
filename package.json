@@ -9,7 +9,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "db:push": "prisma db push",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "db:backup": "tsx scripts/db-backup.ts",
+    "provider:check": "tsx scripts/provider-check.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

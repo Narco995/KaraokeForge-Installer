@@ -7,7 +7,7 @@
  */
 
 export type ModelKind = "IMAGE" | "VIDEO" | "UPSCALE" | "EDIT" | "AUDIO";
-export type ProviderId = "replicate" | "fal";
+export type ProviderId = "replicate" | "fal" | "elevenlabs";
 
 export type ModelCapabilities = {
   textToImage?: boolean;
@@ -244,6 +244,44 @@ export const MODELS: ModelDef[] = [
       backgroundRemoval: true,
       supportsImageRef: true,
       maxRefImages: 1,
+    }),
+  },
+  {
+    id: "eleven-multilingual-v2",
+    name: "ElevenLabs Multilingual v2",
+    provider: "elevenlabs",
+    providerModel: "eleven_multilingual_v2",
+    kind: "AUDIO",
+    description:
+      "Highest-quality text-to-speech in 29 languages. Ideal for narration, voiceovers and cinematic dialogue.",
+    strengths: ["Narration", "29 languages", "Emotional range"],
+    creditScore: 2,
+    avgSeconds: 8,
+    envKey: "ELEVENLABS_API_KEY",
+    capabilities: imageCaps({
+      aspectRatios: [],
+      counts: [1],
+      textToAudio: true,
+      resolutionCap: "128 kbps audio",
+    }),
+  },
+  {
+    id: "eleven-flash-v2.5",
+    name: "ElevenLabs Flash v2.5",
+    provider: "elevenlabs",
+    providerModel: "eleven_flash_v2_5",
+    kind: "AUDIO",
+    description:
+      "Sub-300ms voice generation in 32 languages — the cheapest model for bulk voiceover and captions.",
+    strengths: ["Fastest TTS", "32 languages", "Lowest cost"],
+    creditScore: 1,
+    avgSeconds: 3,
+    envKey: "ELEVENLABS_API_KEY",
+    capabilities: imageCaps({
+      aspectRatios: [],
+      counts: [1],
+      textToAudio: true,
+      resolutionCap: "128 kbps audio",
     }),
   },
 ];

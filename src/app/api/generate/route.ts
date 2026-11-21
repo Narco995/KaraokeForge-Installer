@@ -23,9 +23,9 @@ export async function POST(req: NextRequest) {
     }
 
     let prompt = input.prompt;
-    if (input.enhanced) {
+    if (input.enhanced && (input.kind === "IMAGE" || input.kind === "VIDEO")) {
       prompt = await enhancePrompt(prompt, {
-        kind: input.kind as "IMAGE" | "VIDEO",
+        kind: input.kind,
         cameraPreset: input.params.cameraPreset,
         shotType: input.params.shotType,
         lens: input.params.lens,
