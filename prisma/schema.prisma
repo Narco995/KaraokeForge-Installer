@@ -1,0 +1,155 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  passwordHash   String
+  name           String
+  role           String   @default("USER") // USER | ADMIN
+  plan           String   @default("FREE") // FREE | STARTER | PRO | PREMIUM
+  credits        Int      @default(25)
+  avatarAssetId  String?
+  bio            String?
+  suspended      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  jobs        GenerationJob[]
+  assets      Asset[]
+  projects    Project[]
+  characters  Character[]
+  editorProjects EditorProject[]
+  ledger      CreditLedgerEntry[]
+  transactions PaymentTransaction[]
+  auditLogs   AuditLog[]
+}
+
+model CreditLedgerEntry {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  delta        Int
+  balanceAfter Int
+  kind         String // HOLD | SPEND_FINAL | REFUND | GRANT | PURCHASE | ADMIN_ADJUST
+  jobId        String?
+  note         String?
+  createdAt    DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model GenerationJob {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind           String // IMAGE | VIDEO | UPSCALE | EDIT | AUDIO
+  tool           String // text_to_image, image_to_video, ...
+  modelId        String
+  provider       String
+  status         String    @default("QUEUED") // QUEUED | RUNNING | SUCCEEDED | FAILED | CANCELED
+  prompt         String
+  negativePrompt String?
+  params         String    @default("{}") // JSON payload
+  costCredits    Int       @default(0)
+  refunded       Boolean   @default(false)
+  attempts       Int       @default(0)
+  error          String?
+  providerJobId  String?
+  assetIds       String    @default("[]")
+  createdAt      DateTime  @default(now())
+  startedAt      DateTime?
+  finishedAt     DateTime?
+
+  @@index([userId, createdAt])
+  @@index([status])
+}
+
+model Asset {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobId     String?
+  kind      String // IMAGE | VIDEO | AUDIO
+  url       String
+  localPath String?
+  width     Int?
+  height    Int?
+  durationS Float?
+  mediaType String? // e.g. image/png, video/mp4
+  favorite  Boolean  @default(false)
+  meta      String   @default("{}")
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  assetIds    String   @default("[]")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId, updatedAt])
+}
+
+model Character {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name              String
+  description       String?
+  referenceAssetIds String   @default("[]")
+  coverAssetId      String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([userId, updatedAt])
+}
+
+model EditorProject {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  timeline  String   @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, updatedAt])
+}
+
+model PaymentTransaction {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider    String // stripe | manual
+  providerRef String?
+  plan        String
+  amountCents Int
+  credits     Int
+  status      String   @default("PENDING") // PENDING | COMPLETED | FAILED
+  createdAt   DateTime @default(now())
+  completedAt DateTime?
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  detail    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}

@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #08080a;
+  --color-ink-2: #0d0d11;
+  --color-panel: #131318;
+  --color-panel-2: #1a1a22;
+  --color-edge: #26262f;
+  --color-edge-2: #34343f;
+  --color-accent: #7c5cff;
+  --color-accent-2: #22d3ee;
+  --color-amber: #ffb86b;
+  --color-text: #f2f2f6;
+  --color-muted: #9b9ba7;
+  --color-danger: #ff5c7a;
+  --color-success: #3ddc97;
+}
+
+:root { color-scheme: dark; }
+
+html, body {
+  background: var(--color-ink);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+body { min-height: 100dvh; }
+
+::selection { background: color-mix(in srgb, var(--color-accent) 40%, transparent); }
+
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb { background: var(--color-edge-2); border-radius: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }
+
+input, textarea, select, button { font: inherit; color: inherit; }
+
+@utility glass {
+  background: color-mix(in srgb, var(--color-panel) 72%, transparent);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border: 1px solid color-mix(in srgb, var(--color-edge) 80%, transparent);
+}
+
+@utility gradient-text {
+  background: linear-gradient(100deg, #fff 20%, var(--color-accent) 55%, var(--color-accent-2) 80%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility btn-accent {
+  background: linear-gradient(135deg, var(--color-accent), #5a3ff0 60%, var(--color-accent-2) 140%);
+  color: white;
+}
+
+@keyframes ff-fade-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes ff-pulse-ring { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 45%, transparent); } 70% { box-shadow: 0 0 0 12px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+@keyframes ff-shimmer { from { background-position: -200% 0; } to { background-position: 200% 0; } }
+@keyframes ff-spin { to { transform: rotate(360deg); } }
+
+.animate-fade-up { animation: ff-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-pulse-ring { animation: ff-pulse-ring 2s infinite; }
+.shimmer { background: linear-gradient(100deg, var(--color-panel) 40%, var(--color-panel-2) 50%, var(--color-panel) 60%); background-size: 200% 100%; animation: ff-shimmer 1.4s linear infinite; }
+.spin { animation: ff-spin 0.9s linear infinite; }
+
+.aurora-bg {
+  background:
+    radial-gradient(60% 50% at 15% 0%, color-mix(in srgb, var(--color-accent) 16%, transparent), transparent 70%),
+    radial-gradient(50% 40% at 85% 10%, color-mix(in srgb, var(--color-accent-2) 12%, transparent), transparent 70%),
+    radial-gradient(40% 40% at 50% 100%, color-mix(in srgb, var(--color-amber) 7%, transparent), transparent 70%);
+}
