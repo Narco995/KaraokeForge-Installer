@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { PageHeader } from "@/components/ui";
+import DirectorPanel from "@/components/studio/director";
 import {
   Image as ImageIcon, Clapperboard, UserRound, Scissors, Scaling, Eraser,
   Type, Wand2, Video, Mic,
@@ -21,9 +22,11 @@ const TOOLS = [
 
 export default function Page() {
   return (
-    <div className="mx-auto max-w-5xl">
-      <PageHeader title="Create" subtitle="Every FREEFIELDER tool in one launcher. All tools run real generation jobs." />
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="mx-auto max-w-5xl space-y-10">
+      <DirectorPanel />
+      <div>
+        <PageHeader title="All tools" subtitle="Every FREEFIELDER tool in one launcher. All tools run real generation jobs." />
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {TOOLS.map((t) => (
           <Link
             key={t.label}
@@ -38,6 +41,7 @@ export default function Page() {
             <p className="mt-1 text-sm text-muted">{t.desc}</p>
           </Link>
         ))}
+        </div>
       </div>
     </div>
   );

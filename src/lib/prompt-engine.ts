@@ -100,6 +100,65 @@ export async function enhancePrompt(prompt: string, opts: EnhanceOptions): Promi
   }
 }
 
+/**
+ * Artifact-reduction negative prompts. Applied as suggestions (Director plans
+ * embed them; users can always override in the studios). These encode known
+ * diffusion/audio failure modes per media kind, not invented capabilities.
+ */
+const KIND_NEGATIVES: Record<string, string> = {
+  IMAGE: "blurry, low resolution, jpeg artifacts, watermark, signature, text glitches, deformed hands, extra limbs, oversaturated",
+  VIDEO: "flickering, morphing faces, jitter, warping background, text artifacts, abrupt cuts, ghosting",
+  AUDIO: "static noise, clipping, robotic distortion, echo artifacts",
+};
+
+const STYLE_NEGATIVES: Record<string, string> = {
+  photoreal: "cartoon, illustration, 3d render look, plastic skin",
+  film: "digital oversharpening, hdr glow, modern digital video look",
+  anime: "photorealistic, uncanny 3d proportions",
+  ugc: "polished commercial lighting, studio perfectionism",
+};
+
+export function defaultNegativePrompt(kind: "IMAGE" | "VIDEO" | "AUDIO", style?: string): string {
+  const parts = [KIND_NEGATIVES[kind] ?? ""];
+  if (style && STYLE_NEGATIVES[style]) parts.push(STYLE_NEGATIVES[style]);
+  return parts.filter(Boolean).join(", ");
+}
+
+/**
+ * Character-continuity clause. Honest by design: it maximizes the chance of
+ * recognition by re-stating identity attributes; it never guarantees perfect
+ * identity preservation (see Character Studio messaging).
+ */
+export function consistencyClause(characterName?: string): string {
+  const base = "consistent character identity across all shots, same facial structure, same hair, same wardrobe";
+  return characterName ? `${base} (${characterName})` : base;
+}
+
+const ROLE_CLAUSES: Record<string, string> = {
+  establishing: "wide establishing composition, clear environment read, layered depth",
+  hero: "hero framing, subject prominence, production-key-art quality",
+  motion: "expressive motion, clear subject action, professional color grade",
+};
+
+/** Compose a director shot prompt from a beat + style treatment + shot role. */
+export function craftShotPrompt(beat: string, style: DirectorStyleParam, role: string): string {
+  const treatment = STYLE_TREATMENTS[style] ?? STYLE_TREATMENTS.cinematic;
+  return [beat.trim(), treatment, ROLE_CLAUSES[role] ?? "", "balanced composition, noise-free, production quality"]
+    .filter(Boolean)
+    .join(", ");
+}
+
+const STYLE_TREATMENTS: Record<string, string> = {
+  cinematic: "shot on 35mm film, filmic halation, professional color grade",
+  product: "premium product photography, seamless gradient backdrop, crisp reflections",
+  ugc: "authentic UGC smartphone feel, natural handheld framing",
+  anime: "modern anime key visual, crisp linework, vibrant cel shading",
+  documentary: "observational documentary framing, natural light, honest textures",
+  fashion: "editorial fashion photography, controlled studio strobes, confident posing",
+};
+
+type DirectorStyleParam = "cinematic" | "product" | "ugc" | "anime" | "documentary" | "fashion";
+
 /** Compose the final video prompt from scene description + camera directive. */
 export function composeVideoPrompt(
   scene: string,

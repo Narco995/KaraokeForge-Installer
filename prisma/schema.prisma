@@ -26,6 +26,7 @@ model User {
   projects    Project[]
   characters  Character[]
   editorProjects EditorProject[]
+  storyboards Storyboard[]
   ledger      CreditLedgerEntry[]
   transactions PaymentTransaction[]
   auditLogs   AuditLog[]
@@ -125,6 +126,24 @@ model EditorProject {
   timeline  String   @default("{}")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([userId, updatedAt])
+}
+
+model Storyboard {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title         String
+  brief         String
+  style         String   @default("cinematic")
+  aspect        String   @default("16:9")
+  plan          String
+  budgetCredits Int      @default(0)
+  status        String   @default("PLANNED") // PLANNED | EXECUTING | DONE
+  jobIds        String   @default("[]")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([userId, updatedAt])
 }

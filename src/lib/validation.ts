@@ -63,6 +63,18 @@ export const assetPatchSchema = z.object({
   favorite: z.boolean().optional(),
 });
 
+export const directorSchema = z.object({
+  title: z.string().max(120).optional(),
+  brief: z.string().min(10).max(4000),
+  style: z.enum(["cinematic", "product", "ugc", "anime", "documentary", "fashion"]).optional(),
+  aspect: z.string().max(8).optional(),
+  maxBeats: z.number().int().min(1).max(8).optional(),
+  priority: z.enum(["quality", "speed", "cost"]).optional(),
+  includeNarration: z.boolean().optional(),
+});
+
+export type DirectorInput = z.infer<typeof directorSchema>;
+
 export const adminUserPatchSchema = z.object({
   creditDelta: z.number().int().min(-100000).max(100000).optional(),
   role: z.enum(["USER", "ADMIN"]).optional(),

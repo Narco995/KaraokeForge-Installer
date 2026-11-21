@@ -12,6 +12,8 @@ An independent, production-grade AI creative platform: image, video, character, 
 
 ### Studios (all 12-route workspace)
 
+- **AI Director** (in Create): one brief -> beat-by-beat production plan with routed models, camera presets, per-shot credit budgets and honest availability per shot; execute shots as real generation jobs from the same plan.
+
 | Route | Studio | Notes |
 |---|---|---|
 | `/` | Home | Landing page + authed dashboard (stats, quick actions, recent generations) |
